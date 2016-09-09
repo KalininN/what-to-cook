@@ -23,8 +23,10 @@ class Recipe(models.Model):
 
     plates = models.IntegerField(default=1)
 
-    time = models.IntegerField(blank=True)
+    time = models.CharField(max_length=50, blank=True)
 
     title = models.CharField(max_length=500)
 
     ingredients = models.ManyToManyField(IngredientAmount)
+
+    link = models.CharField(max_length=500)
