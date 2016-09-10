@@ -1,4 +1,4 @@
-#from django.shortcuts import render
+# from django.shortcuts import render
 
 import re
 from . import models
@@ -14,7 +14,8 @@ def index(request):
 def parse_recipe():
     # -*- coding: utf-8 -*-
 
-    ingredientexpr = re.compile(r"<span itemprop=\"ingredient\"[^>]*><[^>]*www\.povarenok\.ru/recipes/ingredient/(\d+)[^>]*>[^>]*>([^<]+)[^>]*>[^>]*>[^>]*>([^<]+)<")
+    ingredientexpr = re.compile(
+        r"<span itemprop=\"ingredient\"[^>]*><[^>]*www\.povarenok\.ru/recipes/ingredient/(\d+)[^>]*>[^>]*>([^<]+)[^>]*>[^>]*>[^>]*>([^<]+)<")
 
     remscriptsexpr = re.compile(r"<(S|s)cript[^>]*></(S|s)cript>")
 
@@ -31,10 +32,10 @@ def parse_recipe():
     data = remscriptsexpr.sub("", data)
 
     title = titleexpr.search(data).group(1).strip()
-    #print(u"title = {}".format(title))
+    # print(u"title = {}".format(title))
 
     summary = summaryexpr.search(data).group(1).strip()
-    #print(u"summary = {}".format(summary))
+    # print(u"summary = {}".format(summary))
 
     timeneeded = timeexpr.search(data)
     if timeneeded is None:
@@ -43,14 +44,14 @@ def parse_recipe():
     else:
         timeneeded = (timeneeded.group(1), timeneeded.group(2).strip())
         time = timeneeded[1]
-    #print(u"time = {}; value = {}".format(timeneeded[0], timeneeded[1]))
+    # print(u"time = {}; value = {}".format(timeneeded[0], timeneeded[1]))
 
     plates = platesexpr.search(data)
     if plates is None:
         plates = 1
     else:
         plates = plates.group(1).strip()
-    #print(u"plates = {}".format(plates))
+    # print(u"plates = {}".format(plates))
 
     with transaction.atomic():
         recipe = models.Recipe(title=title, summary=summary, plates=plates, time=time)
@@ -63,5 +64,5 @@ def parse_recipe():
             recipe.ingredients.add(ingredient_amount)
             ingredient_name = models.IngredientName(primary_id=ing[0], name=ing[1])
             ingredient_name.save()
-            #print(u"id = {}; name = {}; amount = {}".format(ing[0], ing[1], ing[2]))
+            # print(u"id = {}; name = {}; amount = {}".format(ing[0], ing[1], ing[2]))
         recipe.save()
