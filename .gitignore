@@ -1,6 +1,7 @@
 *__pycache__*
 *.pyc
 index.html
+whattocook/*.sqlite3
 .idea
 exctractdata.py
 index1.html

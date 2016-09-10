@@ -1,0 +1,9 @@
+<h1>{{recipe.title}}</h1>
+<h2>Описание:</h2>
+<p>{{recipe.summary}}</p>
+<p>{{recipe.time}}</p>
+<p>порций: {{recipe.plates}}</p>
+<h2>Ингридиенты:</h2>
+{% for ing in ingredients %}
+	<p>{{ing.name}}: {{ing.amount}}</p>
+{% endfor %}
