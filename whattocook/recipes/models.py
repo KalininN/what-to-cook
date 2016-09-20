@@ -29,4 +29,4 @@ class Recipe(models.Model):
 
     ingredients = models.ManyToManyField(IngredientAmount)
 
-    link = models.CharField(max_length=500)
+    link = models.CharField(max_length=500, blank=True)
