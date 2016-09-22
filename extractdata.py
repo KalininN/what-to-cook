@@ -2,6 +2,7 @@
 
 import re
 
+
 ingredientexpr = re.compile(r"<span itemprop=\"ingredient\"[^>]*><[^>]*www\.povarenok\.ru/recipes/ingredient/(\d+)[^>]*>[^>]*>([^<]+)[^>]*>[^>]*>[^>]*>([^<]+)<")
 
 remscriptsexpr = re.compile(r"<(S|s)cript[^>]*></(S|s)cript>")
@@ -14,7 +15,9 @@ summaryexpr = re.compile(r"<span itemprop=\"summary\">([^<]+)<")
 
 titleexpr = re.compile(r"<h1><[^>]*>([^<]+)<")
 
-data = open("index.html", "r", encoding="cp1251").read()
+
+#data = open("index.html", "r", encoding="cp1251").read()
+data = open("index1.html", "r", encoding="cp1251").read()
 data = remscriptsexpr.sub("", data)
 
 title = titleexpr.search(data).group(1).strip()
@@ -26,6 +29,7 @@ print(u"summary = {}".format(summary))
 timeneeded = timeexpr.search(data)
 if timeneeded is None:
 	timeneeded = ("N/A", "?")
+
 else:
 	timeneeded = (timeneeded.group(1), timeneeded.group(2).strip())
 print(u"time = {}; value = {}".format(timeneeded[0], timeneeded[1]))
