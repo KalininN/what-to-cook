@@ -1,0 +1,5 @@
+<form action="{% url 'recipes:addrecipe' %}" method="POST">
+{% csrf_token %}
+<input type="text" name="id" value=""></input>
+<input type="submit" value="Add!" />
+</form>

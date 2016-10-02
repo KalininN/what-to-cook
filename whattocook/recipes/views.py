@@ -1,11 +1,15 @@
-import re
+# -*- coding: utf-8 -*-
 
-from django.template import loader
-from django.http import HttpResponse
+import re
+import requests
+
+from django.http import HttpResponse, Http404, HttpResponseBadRequest, HttpResponseRedirect
+from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.core.urlresolvers import reverse
+from django.template import loader
 
-from . import models
 from .models import *
 
 
@@ -13,46 +17,34 @@ def index(request):
     return HttpResponse("Hello, world. You're at the recipes index.")
 
 
-def show_recipe(request, recipe_id):
-    template = loader.get_template('show_recipe.html')
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
-    context = {
-        "id": recipe_id,
-        "recipe": recipe,
-        "ingredients": []
-    }
-    for ing_amount in recipe.ingredients.all():
-        ing = IngredientName.objects.get(primary_id=ing_amount.primary_id)
-        context["ingredients"].append({"name": ing.name, "amount": str(ing_amount.amount) + " " + ing_amount.units})
-    return HttpResponse(template.render(context, request))
+@require_POST
+def addrecipe_post(request):
+    recipe_id = request.POST['id']
+    try:
+        recipe_id = int(recipe_id)
+    except ValueError:
+        return HttpResponseBadRequest()
 
-
-def parse_recipe():
-    # -*- coding: utf-8 -*-
+    if Recipe.objects.filter(pk=recipe_id).exists():
+        return HttpResponseRedirect(reverse('recipes:showrecipe', args=(recipe_id,)))
 
     ingredientexpr = re.compile(
-        r"<span itemprop=\"ingredient\"[^>]*><[^>]*www\.povarenok\.ru/recipes/ingredient/(\d+)[^>]*>[^>]*>([^<]+)[^>]*>[^>]*>[^>]*>([^<]+)<"
-    )
-
+        r"<span itemprop=\"ingredient\"[^>]*><[^>]*www\.povarenok\.ru/recipes/ingredient/(\d+)[^>]*>[^>]*>([^<]+)[^>]*>[^>]*>[^>]*>([^<]+)<")
     remscriptsexpr = re.compile(r"<(S|s)cript[^>]*></(S|s)cript>")
-
     timeexpr = re.compile(r"<time datetime=\"([^\"]+)\"[^>]*>([^<]+)<")
-
     platesexpr = re.compile(u"<strong>Количество порций:</strong>([^<]+)<")
-
     summaryexpr = re.compile(r"<span itemprop=\"summary\">([^<]+)<")
-
     titleexpr = re.compile(r"<h1><[^>]*>([^<]+)<")
 
-    # data = open("index.html", "r", encoding="cp1251").read()
-    data = open("index1.html", "r", encoding="cp1251").read()
+    req = requests.get(r'http://www.povarenok.ru/recipes/show/' + str(recipe_id) + r'/')
+    if req.status_code != requests.codes.ok:
+        return HttpResponseBadRequest()
+    data = req.text
     data = remscriptsexpr.sub("", data)
 
     title = titleexpr.search(data).group(1).strip()
-    # print(u"title = {}".format(title))
 
     summary = summaryexpr.search(data).group(1).strip()
-    # print(u"summary = {}".format(summary))
 
     timeneeded = timeexpr.search(data)
     if timeneeded is None:
@@ -61,25 +53,48 @@ def parse_recipe():
     else:
         timeneeded = (timeneeded.group(1), timeneeded.group(2).strip())
         time = timeneeded[1]
-    # print(u"time = {}; value = {}".format(timeneeded[0], timeneeded[1]))
 
     plates = platesexpr.search(data)
     if plates is None:
         plates = 1
     else:
         plates = plates.group(1).strip()
-    # print(u"plates = {}".format(plates))
 
     with transaction.atomic():
-        recipe = models.Recipe(title=title, summary=summary, plates=plates, time=time)
+        recipe = Recipe(id=recipe_id, title=title, summary=summary, plates=plates, time=time)
         recipe.save()
 
         ingredients = ingredientexpr.findall(data)
         for ing in ingredients:
-            ingredient_amount = models.IngredientAmount(amount=ing[2], primary_id=ing[0])
+            ingredient_amount = IngredientAmount(amount=ing[2], ingredient_id=ing[0])
             ingredient_amount.save()
             recipe.ingredients.add(ingredient_amount)
-            ingredient_name = models.IngredientName(primary_id=ing[0], name=ing[1])
-            ingredient_name.save()
-            # print(u"id = {}; name = {}; amount = {}".format(ing[0], ing[1], ing[2]))
+            IngredientName.objects.create_if_not_exists(ing[0], ing[1])
         recipe.save()
+    return HttpResponseRedirect(reverse('recipes:showrecipe', args=(recipe_id,)))
+
+
+def addrecipe_get(request):
+    template = loader.get_template('addrecipe.html')
+    return HttpResponse(template.render({}, request))
+
+
+def addrecipe(request):
+    if request.method == 'POST':
+        return addrecipe_post(request)
+    else:
+        return addrecipe_get(request)
+
+
+def showrecipe(request, recipe_id):
+    template = loader.get_template('showrecipe.html')
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    context = {
+        "id": recipe_id,
+        "recipe": recipe,
+        "ingredients": []
+    }
+    for ing_amount in recipe.ingredients.all():
+        ing = IngredientName.objects.get(pk=ing_amount.ingredient_id)
+        context["ingredients"].append({"name": ing.name, "amount": str(ing_amount.amount) + " " + ing_amount.units})
+    return HttpResponse(template.render(context, request))
