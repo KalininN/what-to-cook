@@ -9,12 +9,15 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.core.urlresolvers import reverse
 from django.template import loader
+from django.utils import timezone
 
 from .models import *
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the recipes index.")
+    template = loader.get_template('titlepage.html')
+    context = {'last_recipes': Recipe.objects.order_by('add_time').all()[:5]}
+    return HttpResponse(template.render(context, request))
 
 
 @require_POST
@@ -48,7 +51,7 @@ def addrecipe_post(request):
 
     timeneeded = timeexpr.search(data)
     if timeneeded is None:
-        timeneeded = ("N/A", "?")
+        #timeneeded = ("N/A", "?")
         time = ""
     else:
         timeneeded = (timeneeded.group(1), timeneeded.group(2).strip())
@@ -61,7 +64,7 @@ def addrecipe_post(request):
         plates = plates.group(1).strip()
 
     with transaction.atomic():
-        recipe = Recipe(id=recipe_id, title=title, summary=summary, plates=plates, time=time)
+        recipe = Recipe(id=recipe_id, title=title, summary=summary, plates=plates, time=time, add_time=timezone.now())
         recipe.save()
 
         ingredients = ingredientexpr.findall(data)

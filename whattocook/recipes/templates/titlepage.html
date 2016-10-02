@@ -1,0 +1,5 @@
+<h1>Hello, world. You're at the recipes index.</h1>
+{% for recipe in last_recipes %}
+    <h2>{{ recipe.title }}</h2>
+    <p> Время приготовления: {{ recipe.time }}</p>
+{% endfor %}

@@ -34,6 +34,7 @@ class Recipe(models.Model):
     title = models.CharField(max_length=500, default='')
     ingredients = models.ManyToManyField(IngredientAmount)
     link = models.CharField(max_length=500)
+    add_time = models.DateTimeField()
 
     def __str__(self):
         return self.title
