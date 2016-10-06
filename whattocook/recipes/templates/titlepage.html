@@ -1,5 +1,16 @@
-<h1>Hello, world. You're at the recipes index.</h1>
+<html>
+<head>
+    <title>his-own-chef.ru - Сам себе повар</title>
+    <style type="text/css">
+        div {}
+        body {background-color: lemonchiffon;}
+    </style>
+</head>
+<body>
+<h2>Hello, world. You're at the recipes index.</h2>
 {% for recipe in last_recipes %}
     <h2>{{ recipe.title }}</h2>
     <p> Время приготовления: {{ recipe.time }}</p>
 {% endfor %}
+</body>
+</html>
