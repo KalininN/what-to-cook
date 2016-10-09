@@ -2,15 +2,70 @@
 <head>
     <title>his-own-chef.ru - Сам себе повар</title>
     <style type="text/css">
-        div {}
-        body {background-color: lemonchiffon;}
+        #header {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-left: 5%;
+            width: 90%;
+            margin-bottom: 40px;
+        }
+        #header a {
+        text-decoration: none;
+        font-weight: bold;
+        }
+        #header a:hover {
+        text-decoration: underline;
+        }
+
+        #last-added-recipes {
+        padding: 30px;
+        }
+
+        div.recipe-short {
+        margin-bottom: 20px;
+        }
+        div.recipe-short h2 {
+        margin-bottom: 3px;
+        }
+        div.recipe-short p {
+        margin-top: 3px;
+        }
+
+        #button{
+        background: cornflowerbluee;
+        border-color: cornflowerblue;
+        border-radius: 3px;
+        }
+
+        body {background-color: lightsteelblue;}
     </style>
 </head>
 <body>
-<h2>Hello, world. You're at the recipes index.</h2>
-{% for recipe in last_recipes %}
-    <h2>{{ recipe.title }}</h2>
-    <p> Время приготовления: {{ recipe.time }}</p>
-{% endfor %}
+<div id="header">
+<button id="button"><a href="/recipes">Добавить свой рецепт</a></button>
+<button id="button"><a href="/recipes">Предложить рецепт</a></button>
+<button id="button"><a href="/recipes">Найти рецепт</a></button>
+<button id="button"><a href="/recipes">Войти/Зарегистрироваться</a></button>
+</div>
+<table>
+    <tr>
+        <td id="last-added-recipes">
+            <h1>Последние добавленные</h1>
+            {% for recipe in last_recipes %}
+            <div class="recipe-short">
+                <h2>{{ recipe.title | safe }}</h2>
+                <p> Время приготовления: {{ recipe.time }}</p>
+            </div>
+            {% endfor %}
+        </td>
+        <td id="find-recipe">
+        бла-бла-бла
+        тут будет игра
+        </td>
+    </tr>
+</table>
 </body>
 </html>
