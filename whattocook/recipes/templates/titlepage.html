@@ -25,7 +25,9 @@
         }
 
         div.recipe-short {
-        margin-bottom: 20px;
+        margin-bottom: 10px;
+        padding: 3px;
+        border-radius: 3px;
         }
         div.recipe-short h2 {
         margin-bottom: 3px;
@@ -33,8 +35,12 @@
         div.recipe-short p {
         margin-top: 3px;
         }
+        div.recipe-short:hover {
+        cursor: pointer;
+        background-color: #A0B4CE;
+        }
 
-        #button{
+        div.button{
         background: cornflowerbluee;
         border-color: cornflowerblue;
         border-radius: 3px;
@@ -45,17 +51,17 @@
 </head>
 <body>
 <div id="header">
-<button id="button"><a href="/recipes">Добавить свой рецепт</a></button>
-<button id="button"><a href="/recipes">Предложить рецепт</a></button>
-<button id="button"><a href="/recipes">Найти рецепт</a></button>
-<button id="button"><a href="/recipes">Войти/Зарегистрироваться</a></button>
+<button class="button"><a href="/recipes">Добавить свой рецепт</a></button>
+<button class="button"><a href="/recipes">Предложить рецепт</a></button>
+<button class="button"><a href="/recipes">Найти рецепт</a></button>
+<button class="button"><a href="/recipes">Войти/Зарегистрироваться</a></button>
 </div>
 <table>
     <tr>
         <td id="last-added-recipes">
             <h1>Последние добавленные</h1>
             {% for recipe in last_recipes %}
-            <div class="recipe-short">
+            <div class="recipe-short" onclick="window.location.href='/recipes/showrecipe/{{recipe.pk}}';">
                 <h2>{{ recipe.title | safe }}</h2>
                 <p> Время приготовления: {{ recipe.time }}</p>
             </div>
