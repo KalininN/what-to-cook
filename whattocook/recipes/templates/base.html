@@ -1,0 +1,82 @@
+<html>
+<head>
+    <title>{% block title %}his-own-chef.ru - Сам себе повар{% endblock %}</title>
+    <style type="text/css">
+        #header {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-left: 5%;
+            width: 90%;
+            margin-bottom: 40px;
+        }
+
+        #header a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #header a:hover {
+            text-decoration: underline;
+        }
+
+        #header button {
+            background: cornflowerbluee;
+            border-color: cornflowerblue;
+            border-radius: 3px;
+        }
+        
+        #content {
+            width: 60%;
+            margin: auto;
+        }
+
+
+        #last-added-recipes {
+            padding: 30px;
+        }
+        
+        div.recipe-short {
+            margin-bottom: 20px;
+        }
+        
+        div.recipe-short h2 {
+            margin-bottom: 3px;
+        }
+        
+        div.recipe-short p {
+            margin-top: 3px;
+        }
+        
+        div.ingredient {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-bottom: 3px;
+            border-bottom: 2px #98b0c7 solid;
+            margin-bottom: 5px;
+        }
+
+        body {
+            background-color: lightsteelblue;
+        }
+    </style>
+</head>
+<body>
+{% block body %}
+<div id="header">
+<button><a href="/recipes/addrecipe">Добавить свой рецепт</a></button>
+<button><a href="/recipes">Предложить рецепт</a></button>
+<button><a href="/recipes">Найти рецепт</a></button>
+<button><a href="/recipes">Войти/Зарегистрироваться</a></button>
+</div>
+<div id="content">
+{% block content %}
+{% endblock %}
+</div>
+{% endblock %}
+</body>
+</html>

@@ -20,6 +20,19 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 
+def parse_amount(amount_units):
+    words = amount_units.split()
+    if not words:
+        return -1, ''
+    if len(words) == 1:
+        return -1, words[0]
+    try:
+        words[0] = int(words[0])
+    except ValueError:
+        return -1, ' '.join(words)
+    return words[0], ' '.join(words[1:])
+
+
 @require_POST
 def addrecipe_post(request):
     recipe_id = request.POST['id']
@@ -69,7 +82,9 @@ def addrecipe_post(request):
 
         ingredients = ingredientexpr.findall(data)
         for ing in ingredients:
-            ingredient_amount = IngredientAmount(amount=ing[2], ingredient_id=ing[0])
+            ing_amount, ing_units = parse_amount(ing[2])
+            print('amount = {}, units = {}'.format(ing_amount, ing_units))
+            ingredient_amount = IngredientAmount(amount=ing_amount, units=ing_units, ingredient_id=ing[0])
             ingredient_amount.save()
             recipe.ingredients.add(ingredient_amount)
             IngredientName.objects.create_if_not_exists(ing[0], ing[1])
@@ -100,4 +115,6 @@ def showrecipe(request, recipe_id):
     for ing_amount in recipe.ingredients.all():
         ing = IngredientName.objects.get(pk=ing_amount.ingredient_id)
         context["ingredients"].append({"name": ing.name, "amount": str(ing_amount.amount) + " " + ing_amount.units})
+        if ing_amount.amount == -1:
+            context["ingredients"][-1]["amount"] = ing_amount.units
     return HttpResponse(template.render(context, request))
