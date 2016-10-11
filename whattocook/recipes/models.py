@@ -20,7 +20,7 @@ class IngredientName(models.Model):
 
 class IngredientAmount(models.Model):
     ingredient_id = models.IntegerField()
-    amount = models.CharField(max_length=20)
+    amount = models.IntegerField()
     units = models.CharField(max_length=100)
 
     def __str__(self):
